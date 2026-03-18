@@ -1,42 +1,37 @@
 # speiseplan
 
-Speiseplan-Website 
+# Dokumentation & Handover: Speiseplan-App "Haus Gothensee"
 
-1. System-Architektur
-Die App ist eine Lightweight-Node.js-Webanwendung. Sie verzichtet auf komplexe Datenbanken und nutzt ein JSON-basiertes Flat-File-System im Ordner /data.
+Dieses Dokument enthält alle technischen Spezifikationen und Anleitungen für die Inbetriebnahme und Wartung der Speiseplan-Anwendung.
 
-Backend: Node.js mit Express-Framework.
+---
 
-Frontend: Vanilla JavaScript (ES6+), CSS3, HTML5.
+## 🛠 1. Technische Architektur
+Die Anwendung ist eine **Node.js-Web-App**, die auf Einfachheit und Portabilität optimiert wurde. Sie nutzt ein JSON-basiertes Flat-File-System statt einer schweren Datenbank.
 
-Datenhaltung: Persistente JSON-Dateien (users.json, orders.json).
+- **Backend:** Node.js (Express Framework)
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript (keine Framework-Abhängigkeiten)
+- **Datenbank:** JSON-Files im Verzeichnis `/data`
+- **Standard-Port:** `3000`
 
-2. Key Features & Business Logic
-6-Wochen-Turnus: Automatische Berechnung der Menü-Woche basierend auf dem Referenzdatum 2023-12-18 (Mo).
+---
 
-Mittwoch-Rhythmus: Der Admin-Serviceplan ist auf den hausinternen Wechsel (Mittwoch bis Dienstag) optimiert.
+## 📂 2. Projektstruktur & Dateisystem
+Das Projekt folgt einer klaren Struktur für eine einfache Trennung von Logik und Daten:
 
-PAX-Validierung: Frontend-Logik verhindert, dass mehr Essen bestellt werden, als Personen (pax) im Zimmer registriert sind.
-
-Farbleitsystem: Konsistente CSS-Klassen (type-A, type-B, type-C) für die Menü-Kategorien in Gast- und Admin-Ansicht.
-
-Druck-Engine: Dynamische Generierung von Einzel-Zugangsbelegen für Gäste mit automatischem Page-Break.
-
-3. Projektstruktur
-Plaintext
+```text
 /haus-gothensee
-├── server.js            # Express-Server & API-Endpunkte
-├── package.json         # Abhängigkeiten (express)
-├── /data                # Datenbank-Ersatz
-│   ├── users.json       # Zimmer, Passwörter, Tische, Slots
-│   └── orders.json      # Gespeicherte Bestellungen
-└── /public              # Frontend-Assets
-    ├── index.html       # Login-Maske
-    ├── admin.html       # Admin-Interface (Zimmer & Serviceplan)
-    ├── app.js           # Gast-Logik & UI-Rendering
-    ├── menu.js          # Speiseplan-Daten (Woche 1-6)
-    └── style.css        # Globales Design & Druck-Layouts
-
+├── server.js              # Hauptserver: API-Routen & File-Handling
+├── package.json           # Node-Abhängigkeiten
+├── /data                  # Datenbank-Verzeichnis (Wird automatisch erstellt)
+│   ├── users.json         # Zimmer-Accounts, Passwörter, Kapazitäten
+│   └── orders.json        # Bestell-Historie nach Turnus-Wochen
+└── /public                # Client-seitige Dateien (Web-Root)
+    ├── index.html         # Login-Seite & App-Container
+    ├── admin.html         # Admin-Dashboard (Management & Serviceplan)
+    ├── app.js             # Client-Logik (Bestellungen, Validierung, PAX-Limit)
+    ├── menu.js            # Speiseplan-Daten (Turnus-Wochen 1-6)
+    └── style.css          # Globales Design & Print-Layouts
 
 🚀 Startanleitung für Entwickler
 Um die Anwendung lokal oder auf einem Server in Betrieb zu nehmen, folge diesen Schritten:
