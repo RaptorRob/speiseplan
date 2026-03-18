@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haus Gothensee - Bestellung</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-ui" class="card">
+        <h1>Anmeldung</h1>
+        <input type="text" id="u" placeholder="Zimmer">
+        <input type="password" id="p" placeholder="Passwort">
+        <button onclick="handleLogin()">Einloggen</button>
+    </div>
+    <div id="app-ui" style="display:none;" class="card">
+        <div id="menu-view"></div>
+        <button onclick="sessionStorage.clear(); location.reload();" style="margin-top:20px; background:#666; color:white; border:none; padding:10px; width:100%; border-radius:8px; cursor:pointer;">Abmelden</button>
+    </div>
+    <script src="menu.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

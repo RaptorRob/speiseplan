@@ -1,0 +1,31 @@
+{
+  "158": {
+    "pw": "HG-2410",
+    "role": "user",
+    "name": "Zimmer 158",
+    "table": "1",
+    "slot": "1",
+    "pax": 1
+  },
+  "163": {
+    "pw": "HG-6348",
+    "role": "user",
+    "name": "Zimmer 163",
+    "table": "30",
+    "slot": "2",
+    "pax": 3
+  },
+  "366": {
+    "pw": "HG-2646",
+    "role": "user",
+    "name": "Zimmer 366",
+    "table": "29",
+    "slot": "1",
+    "pax": 2
+  },
+  "admin": {
+    "pw": "admin99",
+    "role": "admin",
+    "name": "Administrator"
+  }
+}
