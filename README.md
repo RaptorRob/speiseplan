@@ -32,28 +32,31 @@ Das Projekt folgt einer klaren Struktur für eine einfache Trennung von Logik un
     ├── app.js             # Client-Logik (Bestellungen, Validierung, PAX-Limit)
     ├── menu.js            # Speiseplan-Daten (Turnus-Wochen 1-6)
     └── style.css          # Globales Design & Print-Layouts
+```    
 
-🚀 Startanleitung für Entwickler
+## 🚀 Startanleitung für Entwickler
 Um die Anwendung lokal oder auf einem Server in Betrieb zu nehmen, folge diesen Schritten:
 
-1. Voraussetzungen
+## 1. Voraussetzungen
 Stelle sicher, dass Node.js (Version 16 oder höher) auf dem System installiert ist.
 
-2. Installation
+## 2. Installation
 Navigiere in den Projektordner und installiere die notwendigen Abhängigkeiten (hauptsächlich express):
 
-Bash
+```Bash
 npm install express
 Falls noch keine package.json existiert, kann diese mit npm init -y erstellt werden.
+```
 
-3. Server starten
+## 3. Server starten
 Starte den Node.js-Prozess mit folgendem Befehl:
 
-Bash
+```Bash
 node server.js
 Der Server läuft standardmäßig auf Port 3000.
+```
 
-4. Zugriff
+## 4. Zugriff
 Gast-Ansicht: http://localhost:3000
 
 Admin-Bereich: Nach dem Login mit den Admin-Daten (Standard: admin / admin99) wird man automatisch zur admin.html weitergeleitet.
