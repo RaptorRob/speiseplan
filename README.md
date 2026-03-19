@@ -34,6 +34,20 @@ Das Projekt folgt einer klaren Struktur für eine einfache Trennung von Logik un
     └── style.css          # Globales Design & Print-Layouts
 ```    
 
+# ⚡ Wichtige Hausregeln & Logik (Update)
+
+### 🔒 Bestell-Deadline
+- **Zeitpunkt:** Jeden Donnerstag, 12:00 Uhr mittags.
+- **Effekt:** Nach diesem Zeitpunkt akzeptiert die API keine `POST`-Requests für die aktuelle Woche mehr. Das Frontend sperrt die Eingabemasken für Gäste automatisch.
+
+### 📅 Wochenwechsel & Vorschau
+- **Logik:** Das System nutzt einen rollierenden 6-Wochen-Turnus.
+- **Vorschau-Modus:** Ab Dienstag (00:00 Uhr) kann im Admin-Bereich bereits die kommende Woche eingesehen und gedruckt werden.
+- **Archiv:** Die Vorwoche bleibt im Admin-Bereich über ein Auswahlmenü ("Woche wählen") bis zum endgültigen Turnuswechsel (Mittwoch morgen) für den Nachtrag/Druck verfügbar.
+
+### 🖨️ Druck-Spezifikationen
+- Der Service-Plan ist so programmiert, dass er die Menü-IDs gegen die `menu.js` der jeweiligen Woche mappt. Beim Wechsel der Ansicht (z.B. zurück auf die Vorwoche) werden die korrekten Menütexte der vergangenen Woche geladen.
+
 ## 🚀 Startanleitung für Entwickler
 Um die Anwendung lokal oder auf einem Server in Betrieb zu nehmen, folge diesen Schritten:
 

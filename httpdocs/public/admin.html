@@ -19,14 +19,12 @@
         .view-section { display: none; }
         .view-section.active { display: block; }
         
-        /* Farben für den Serviceplan-Ausdruck */
         .print-meal { padding: 2px 4px; border-radius: 3px; margin-bottom: 2px; display: block; font-weight: bold; border-left: 3px solid #ccc; }
         .p-A { background: #e7f1ff; border-left-color: #007bff; color: #004085; }
         .p-B { background: #e9f7ef; border-left-color: #28a745; color: #155724; }
         .p-C { background: #fff3e6; border-left-color: #fd7e14; color: #856404; }
 
         .btn-print-row { cursor: pointer; background: #6c757d; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; }
-        .btn-print-row:hover { background: #5a6268; }
 
         @media print { 
             .no-print { display: none; } 
@@ -72,11 +70,13 @@
 
         <div id="sec-service" class="view-section">
             <div class="no-print" style="margin-bottom:15px; display: flex; gap: 10px; align-items: center;">
-                <label>Durchgang filtern:</label>
+                <label>Woche:</label>
+                <select id="admin-week-select" onchange="renderServicePlan()" style="padding: 5px;"></select>
+                <label>Durchgang:</label>
                 <select id="filter-slot" onchange="renderServicePlan()" style="padding: 5px;">
-                    <option value="1">Durchgang 1</option>
-                    <option value="2">Durchgang 2</option>
-                    <option value="3">Durchgang 3</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
                 </select>
                 <button onclick="window.print()" style="padding: 5px 15px;">Druckansicht öffnen</button>
             </div>
@@ -87,15 +87,31 @@
     <script src="menu.js"></script>
     <script>
         let currentUsers = [];
-        // Reihenfolge von Mittwoch bis Dienstag
+        // Reihenfolge Fix: Montag ist jetzt fest integriert
         const weekDaysOrder = ["Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag", "Montag", "Dienstag"];
         
-        function getWeek() { return (Math.floor((new Date() - new Date("2024-01-01")) / (7*24*60*60*1000)) % 6) + 1; }
-        
+        function getActualWeek() {
+            const startDate = new Date("2023-12-18");
+            const now = new Date();
+            let week = (Math.floor((now - startDate) / (7*24*60*60*1000)) % 6) + 1;
+            if (now.getDay() === 2) week = (week % 6) + 1; // Dienstag-Vorschau
+            return week;
+        }
+
         async function loadData() {
             const res = await fetch('/api/admin/users');
             currentUsers = await res.json();
             renderUserTable();
+            
+            // Wochen-Dropdown Initialisierung
+            const select = document.getElementById('admin-week-select');
+            select.innerHTML = "";
+            for(let i=1; i<=6; i++) {
+                let opt = document.createElement('option');
+                opt.value = i; opt.innerText = "Woche " + i;
+                if(i === getActualWeek()) opt.selected = true;
+                select.appendChild(opt);
+            }
         }
 
         function renderUserTable() {
@@ -107,53 +123,48 @@
                     <td><input type="number" value="${u.slot||''}" onchange="currentUsers[${i}].slot=this.value" style="width:40px;"></td>
                     <td><input type="number" value="${u.pax||1}" onchange="currentUsers[${i}].pax=this.value" style="width:30px;"></td>
                     <td>
-                        <button class="btn-print-row" onclick="printSingleAccess(${i})">🖨️ Zettel drucken</button>
+                        <button class="btn-print-row" onclick="printSingleAccess(${i})">🖨️ Zettel</button>
                         <button onclick="deleteUser('${u.room}')" style="color:#dc3545; margin-left:15px; border:none; background:none; cursor:pointer; font-size:10px;">Löschen</button>
                     </td>
                 </tr>`).join('');
         }
 
-        // --- DRUCK-FUNKTIONEN FÜR ZUGANGSZETTEL ---
+        // --- ZUGANGSZETTEL LOGIK (Wiederhergestellt) ---
+        function generateAccessHtml(u) {
+            return `
+            <div style="font-family:sans-serif; padding:40px; border:3px solid #000; text-align:center; max-width:450px; margin:40px auto; border-radius:15px;">
+                <h1>Haus Gothensee</h1>
+                <p>Ihr persönlicher Zugang zum Speiseplan</p>
+                <hr>
+                <div style="background:#f2f2f2; padding:25px; border-radius:10px; margin:20px 0;">
+                    <p style="font-size:1.4em;">Zimmer: <strong>${u.room}</strong></p>
+                    <p style="font-size:1.4em;">Passwort-Code: <br>
+                       <strong style="font-family:monospace; letter-spacing:3px; font-size:1.6em;">${u.pw}</strong>
+                    </p>
+                </div>
+                <p>Gedruckt: ${new Date().toLocaleString('de-DE')}</p>
+            </div>`;
+        }
+
         function printSingleAccess(index) {
-            const u = currentUsers[index];
-            const html = generateAccessHtml(u);
             const win = window.open('', '', 'width=600,height=600');
-            win.document.write(`<html><body style="margin:0;">${html}</body></html>`);
+            win.document.write(`<html><body>${generateAccessHtml(currentUsers[index])}</body></html>`);
             win.document.close();
-            win.focus();
             setTimeout(() => { win.print(); win.close(); }, 250);
         }
 
         function printAllAccess() {
             let html = currentUsers.map(u => `<div class="page-break">${generateAccessHtml(u)}</div>`).join('');
             const win = window.open('', '', 'width=800,height=900');
-            win.document.write(`<html><head><style>@media print {.page-break {page-break-after: always;}}</style></head><body style="margin:0;">${html}</body></html>`);
+            win.document.write(`<html><head><style>@media print {.page-break {page-break-after: always;}}</style></head><body>${html}</body></html>`);
             win.document.close();
-            win.focus();
             setTimeout(() => { win.print(); win.close(); }, 250);
         }
 
-        function generateAccessHtml(u) {
-            return `
-            <div style="font-family:sans-serif; padding:40px; border:3px solid #000; text-align:center; max-width:450px; margin:40px auto; border-radius:15px;">
-                <h1 style="margin:0; font-size:2em;">Haus Gothensee</h1>
-                <p style="font-size:1.1em; color:#555; margin-top:5px;">Ihr persönlicher Zugang zum Speiseplan</p>
-                <hr style="margin:20px 0;">
-                <div style="background:#f2f2f2; padding:25px; border-radius:10px; margin:20px 0; border:1px solid #ccc;">
-                    <p style="font-size:1.4em; margin:0;">Zimmer: <strong style="color:#007bff;">${u.room}</strong></p>
-                    <p style="font-size:1.4em; margin:15px 0 0 0;">Passwort-Code: <br>
-                       <strong style="font-family:monospace; letter-spacing:3px; font-size:1.6em; background:white; padding:5px 10px; border:1px solid #aaa;">${u.pw}</strong>
-                    </p>
-                </div>
-                <p style="font-size:0.9em; line-height:1.4;">Bitte bewahren Sie diesen Zettel sicher auf. <br>Sie benötigen diese Daten für jede Essensbestellung.</p>
-                <p style="color:#888; font-size:0.7em; margin-top:40px;">Gedruckt: ${new Date().toLocaleString('de-DE')}</p>
-            </div>`;
-        }
-
-        // --- SERVICEPLAN RENDERN ---
+        // --- SERVICEPLAN (Fix: Montag wird angezeigt) ---
         async function renderServicePlan() {
             const slot = document.getElementById('filter-slot').value;
-            const week = getWeek();
+            const week = document.getElementById('admin-week-select').value;
             const res = await fetch('/api/admin/orders');
             const orders = await res.json();
             const weekOrders = orders[week] || {};
@@ -165,16 +176,18 @@
             h += `</tr></thead><tbody>`;
             
             filtered.forEach(u => {
-                h += `<tr><td><b style="font-size:1.4em;">${u.table||'?'}</b></td><td>Zi. ${u.room}<br><small>(${u.pax} Pers.)</small></td>`;
+                h += `<tr><td><b>${u.table||'?'}</b></td><td>Zi. ${u.room}<br>(${u.pax} P.)</td>`;
                 weekDaysOrder.forEach(day => {
                     let mH = "";
                     if(weekOrders[u.room]) {
-                        Object.keys(weekOrders[u.room].selection).filter(id => {
-                            if (!fullMenuData[week][day]) return false;
-                            return fullMenuData[week][day].find(m => m.id === id);
-                        }).forEach(id => {
-                            let m = fullMenuData[week][day].find(x => x.id === id);
-                            mH += `<span class="print-meal p-${m.type}">${weekOrders[u.room].selection[id]}x ${m.type}</span>`;
+                        Object.keys(weekOrders[u.room].selection).forEach(id => {
+                            // Prüfung ob das Essen am aktuellen Tag in den Menu-Daten existiert
+                            if(fullMenuData[week] && fullMenuData[week][day]) {
+                                let m = fullMenuData[week][day].find(x => x.id === id);
+                                if(m) {
+                                    mH += `<span class="print-meal p-${m.type}">${weekOrders[u.room].selection[id]}x ${m.type}</span>`;
+                                }
+                            }
                         });
                     }
                     h += `<td>${mH || "-"}</td>`;
@@ -184,22 +197,20 @@
             document.getElementById('service-plan-container').innerHTML = h + "</tbody></table>";
         }
 
-        // --- ALLGEMEINE ADMIN LOGIK ---
+        // --- RESTLICHE ADMIN LOGIK ---
         async function saveAssignments() {
             await fetch('/api/admin/save-tables', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
+                method: 'POST', headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify({ assignments: currentUsers }) 
             });
-            alert("Daten erfolgreich gespeichert!");
+            alert("Gespeichert!");
         }
 
         async function activateRoom() {
             const r = document.getElementById('new-room').value;
-            if(!r) return alert("Zimmernummer fehlt!");
+            if(!r) return;
             await fetch('/api/admin/activate', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
+                method: 'POST', headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify({ room: r }) 
             });
             document.getElementById('new-room').value = ""; 
@@ -207,13 +218,11 @@
         }
 
         async function deleteUser(r) { 
-            if(confirm(`Zimmer ${r} wirklich löschen?`)) { 
+            if(confirm(`Zimmer ${r} löschen?`)) { 
                 await fetch(`/api/admin/users/${r}`, { method: 'DELETE' }); 
                 loadData(); 
             } 
         }
-
-        function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
 
         function showSection(name) {
             document.querySelectorAll('.view-section, .nav-tabs button').forEach(el => el.classList.remove('active'));
@@ -222,6 +231,7 @@
             if(name === 'service') renderServicePlan();
         }
 
+        function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
         window.onload = loadData;
     </script>
 </body>
