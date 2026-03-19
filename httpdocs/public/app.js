@@ -92,7 +92,8 @@ async function renderMenu() {
         <div style="background:#f4f4f4; padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid #ddd;">
             <h2 style="margin:0;">Zimmer ${currentSessionUser.username}</h2>
             <p style="margin:5px 0;">Tisch: ${currentSessionUser.table || '?'} | Personen: <strong>${pax}</strong></p>
-            ${deadlinePassed ? '<p style="color:red; font-weight:bold; margin:0;">⚠️ Bestellfrist abgelaufen (Donnerstag 12:00).</p>' : '<p style="margin:0;"><small>Maximal ' + pax + ' Essen pro Tag wählbar.</small></p>'}
+            ${deadlinePassed ? '<p style="color:red; font-weight:bold; margin:0;">⚠️ Bestellfrist abgelaufen (Donnerstag 12:00). Bestelleingabe für die nächste Woche ab Dienstag 0 Uhr möglich.</p>' : '<p style="margin:0;"><small>Maximal ' + pax + ' Essen pro Tag wählbar.</small></p>'}
+            ${!deadlinePassed ? '<p style="color:red; font-weight:bold; margin:0;">🍽️ Bestelleingabe für die nächste Woche bis Donnerstag 12 Uhr möglich.</p>' : '<p style="margin:0;"><small>Maximal ' + pax + ' Essen pro Tag wählbar.</small></p>'}
         </div>
     `;
 

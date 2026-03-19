@@ -37,7 +37,7 @@ Das Projekt folgt einer klaren Struktur für eine einfache Trennung von Logik un
 # ⚡ Wichtige Hausregeln & Logik (Update)
 
 ### 🔒 Bestell-Deadline
-- **Zeitpunkt:** Jeden Donnerstag, 12:00 Uhr mittags.
+- **Zeitpunkt:** Jeden Dienstag ab 0 Uhr bis Donnerstag, 12:00 Uhr mittags kann bestellt werden.
 - **Effekt:** Nach diesem Zeitpunkt akzeptiert die API keine `POST`-Requests für die aktuelle Woche mehr. Das Frontend sperrt die Eingabemasken für Gäste automatisch.
 
 ### 📅 Wochenwechsel & Vorschau
